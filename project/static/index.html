@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerPrep Pro - ATS Analyzer & AI Interview Coach</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-brain"></i> CareerPrep Pro</h1>
+                <p>Complete Career Preparation Platform - ATS Resume Analysis & AI Interview Coach</p>
+            </div>
+        </header>
+
+        <nav class="navigation">
+            <button class="nav-btn active" data-tab="resume">📄 Resume Analyzer</button>
+            <button class="nav-btn" data-tab="interview">🤵 Interview Coach</button>
+            <button class="nav-btn" data-tab="history">📊 History</button>
+        </nav>
+
+        <main class="main-content">
+            <section class="tab-content active" id="resumeTab">
+                <div class="input-section" id="resumeInputSection">
+                    <h2><i class="fas fa-file-upload"></i> ATS Resume Analysis</h2>
+
+                    <div class="upload-container">
+                        <div class="upload-box">
+                            <h3>Job Description</h3>
+                            <div class="upload-area" id="jdUploadArea">
+                                <i class="fas fa-file-pdf"></i>
+                                <p>Drag & drop JD file or click to browse</p>
+                                <p class="file-types">PDF, DOCX, TXT</p>
+                                <input type="file" id="jdFile" accept=".pdf,.docx,.doc,.txt" hidden>
+                            </div>
+                            <div class="file-info" id="jdFileInfo"></div>
+                        </div>
+
+                        <div class="upload-box">
+                            <h3>Resume</h3>
+                            <div class="upload-area" id="resumeUploadArea">
+                                <i class="fas fa-file-alt"></i>
+                                <p>Drag & drop resume file or click to browse</p>
+                                <p class="file-types">PDF, DOCX</p>
+                                <input type="file" id="resumeFile" accept=".pdf,.docx,.doc" hidden>
+                            </div>
+                            <div class="file-info" id="resumeFileInfo"></div>
+                        </div>
+                    </div>
+
+                    <div class="configuration">
+                        <h3><i class="fas fa-cog"></i> Analysis Configuration</h3>
+
+                        <div class="config-grid">
+                            <div class="config-group">
+                                <label for="mustHaveSkills">Critical Must-Have Skills</label>
+                                <textarea id="mustHaveSkills"
+                                    placeholder="Python, Machine Learning, SQL, AWS, Docker...">Python, Machine Learning, SQL, AWS, Docker</textarea>
+                            </div>
+
+                            <div class="config-row">
+                                <div class="config-group">
+                                    <label for="skillStrictness">Skill Matching Strictness: <span
+                                            id="strictnessValue">75</span>/100</label>
+                                    <input type="range" id="skillStrictness" min="1" max="100" value="75">
+                                </div>
+
+                                <div class="config-group">
+                                    <label for="minExperience">Minimum Years Experience</label>
+                                    <input type="number" id="minExperience" min="0" max="50" value="2">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="analyze-btn" id="analyzeBtn">
+                        <i class="fas fa-rocket"></i> Run Comprehensive Analysis
+                    </button>
+                </div>
+                
+                <div class="results-section hidden" id="resumeResultsSection">
+                    <div class="score-display" id="scoreDisplay"></div>
+
+                    <div class="loading-state hidden" id="resumeLoadingState">
+                        <div class="spinner"></div>
+                        <p>🤖 Conducting deep analysis...</p>
+                    </div>
+
+                    <div class="results-content hidden" id="resumeResultsContent">
+                        <div class="card" style="margin-top: 2rem;">
+                            <h3>Analysis Complete!</h3>
+                            <p>Your resume analysis has been completed. Check the different tabs for detailed insights.</p>
+                            <button class="back-btn" id="resumeBackBtn" style="margin-top: 1rem;">
+                                <i class="fas fa-arrow-left"></i> Go Back to Input
+                            </button>
+                        </div>
+                        
+                        <div class="analysis-tabs">
+                            <div class="analysis-tab-headers">
+                                <button class="analysis-tab-header active" data-tab="skills">
+                                    <i class="fas fa-puzzle-piece"></i> Skills Analysis
+                                </button>
+                                <button class="analysis-tab-header" data-tab="feedback">
+                                    <i class="fas fa-comments"></i> Detailed Feedback
+                                </button>
+                                <button class="analysis-tab-header" data-tab="recommendations">
+                                    <i class="fas fa-lightbulb"></i> Recommendations
+                                </button>
+                                <button class="analysis-tab-header" data-tab="risks">
+                                    <i class="fas fa-exclamation-triangle"></i> Risk Analysis
+                                </button>
+                                <button class="analysis-tab-header" data-tab="keywords">
+                                    <i class="fas fa-key"></i> Keyword Analysis
+                                </button>
+                                <button class="analysis-tab-header" data-tab="experience">
+                                    <i class="fas fa-briefcase"></i> Experience Evaluation
+                                </button>
+                            </div>
+
+                            <div class="analysis-tab-content">
+                                <div class="analysis-tab-pane active" id="skillsTab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-times-circle"></i> Missing Critical Skills</h4>
+                                            <div id="missingSkills"></div>
+                                        </div>
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-check-circle"></i> Strong Skills</h4>
+                                            <div id="strongSkills"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="analysis-tab-pane" id="feedbackTab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-thumbs-up"></i> Strengths</h4>
+                                            <div id="strengthsList"></div>
+
+                                            <h4><i class="fas fa-bolt"></i> Immediate Improvements</h4>
+                                            <div id="improvementsList"></div>
+                                        </div>
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-thumbs-down"></i> Weaknesses</h4>
+                                            <div id="weaknessesList"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="analysis-tab-pane" id="recommendationsTab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-edit"></i> Resume Optimization</h4>
+                                            <div id="resumeOptimization"></div>
+                                        </div>
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-graduation-cap"></i> Skill Development</h4>
+                                            <div id="skillDevelopment"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="analysis-tab-pane" id="risksTab">
+                                    <div class="analysis-grid">
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-radiation"></i> High Risk Factors</h4>
+                                            <div id="riskFactors"></div>
+                                        </div>
+                                        <div class="analysis-column">
+                                            <h4><i class="fas fa-flag"></i> Red Flags</h4>
+                                            <div id="redFlags"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="analysis-tab-pane" id="keywordsTab">
+                                    <div id="keywordAnalysis"></div>
+                                </div>
+
+                                <div class="analysis-tab-pane" id="experienceTab">
+                                    <div id="experienceEvaluation"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="interviewTab">
+                <div class="interview-container">
+                    <div class="interview-controls">
+                        <h2><i class="fas fa-user-tie"></i> AI Interview Coach</h2>
+
+                        <div class="interview-settings">
+                            <div class="config-row">
+                                <div class="config-group">
+                                    <label for="jobRole">Job Role</label>
+                                    <input type="text" id="jobRole" value="Software Engineer">
+                                </div>
+                                <div class="config-group">
+                                    <label for="company">Company</label>
+                                    <input type="text" id="company" value="TechCorp Solutions">
+                                </div>
+                            </div>
+
+                            <div class="config-row">
+                                <div class="config-group">
+                                    <label for="experienceLevel">Experience Level</label>
+                                    <select id="experienceLevel">
+                                        <option value="Entry Level">Entry Level</option>
+                                        <option value="Mid Level" selected>Mid Level</option>
+                                        <option value="Senior Level">Senior Level</option>
+                                    </select>
+                                </div>
+                                <div class="config-group">
+                                    <label for="interviewType">Interview Type</label>
+                                    <select id="interviewType">
+                                        <option value="Technical" selected>Technical</option>
+                                        <option value="Behavioral">Behavioral</option>
+                                        <option value="HR Screening">HR Screening</option>
+                                        <option value="Comprehensive">Comprehensive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="interview-buttons">
+                            <button class="start-interview-btn" id="startInterviewBtn">
+                                <i class="fas fa-play"></i> Start Interview
+                            </button>
+                            <button class="end-interview-btn hidden" id="endInterviewBtn">
+                                <i class="fas fa-stop"></i> End Interview
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="interview-conversation hidden" id="interviewConversation">
+                        <div class="conversation-header">
+                            <h3>Live Interview</h3>
+                            <div class="interview-status">
+                                <span id="interviewProgress">Progress: 0%</span>
+                            </div>
+                        </div>
+
+                        <div class="conversation-messages" id="conversationMessages">
+                            </div>
+
+                        <div class="response-input">
+                            <textarea id="userResponse" placeholder="Type your answer here..." rows="4"></textarea>
+                            <button id="sendResponseBtn">
+                                <i class="fas fa-paper-plane"></i> Send Response
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="historyTab">
+                <div class="history-section">
+                    <h2><i class="fas fa-history"></i> Analysis History</h2>
+                    <div class="history-controls">
+                        <button class="refresh-btn" id="refreshHistory">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="clear-btn" id="clearHistory">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                    <div class="history-content">
+                        <div id="historyTable"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>CareerPrep Pro - Complete Career Preparation Platform • Powered by Advanced AI</p>
+        </footer>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html> 
