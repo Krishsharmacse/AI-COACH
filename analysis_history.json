@@ -1,0 +1,331 @@
+[
+  {
+    "timestamp": "2026-02-26T07:33:01.670600",
+    "jd_file": "AI Practical File.pdf",
+    "resume_file": "Compiler Design Practical File.pdf",
+    "overall_score": 38,
+    "component_scores": {
+      "base_ai_score": 35,
+      "skills_score": 0,
+      "similarity_score": 11,
+      "experience_score": 100,
+      "keyword_score": 100
+    },
+    "analysis_data": {
+      "overall_match_percentage": "35",
+      "match_category": "Low",
+      "skills_analysis": {
+        "missing_critical_skills": [
+          "Machine Learning",
+          "SQL",
+          "AWS",
+          "Docker"
+        ],
+        "strong_skills": [
+          "Python",
+          "C",
+          "Algorithmic problem solving"
+        ],
+        "skills_match_percentage": "40"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Limited",
+        "relevant_experience_score": "5/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "Machine Learning",
+          "SQL",
+          "AWS",
+          "Docker"
+        ],
+        "keyword_density_score": "55",
+        "ats_optimization_score": "60"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Strong problem\u2011solving abilities demonstrated in algorithm implementations",
+          "Clear academic record and well\u2011documented project work"
+        ],
+        "weaknesses": [
+          "Lacks industry\u2011level experience with required technologies",
+          "Missing explicit mention of Machine Learning, SQL, AWS, Docker"
+        ],
+        "immediate_improvements": [
+          "Add a dedicated skills section listing Python, C, and any exposure to ML/AWS",
+          "Include project descriptions that link to relevant technologies or methodologies"
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Create a concise skills matrix at the top of the resume",
+          "Use bullet points to highlight projects with quantified outcomes"
+        ],
+        "skill_development": [
+          "Enroll in online courses or certifications for Machine Learning, SQL, AWS, and Docker",
+          "Build a small ML model or deploy a simple application on AWS to gain hands\u2011on experience"
+        ],
+        "presentation_improvements": [
+          "Maintain consistent formatting and font usage throughout the document",
+          "Quantify achievements (e.g., \u201cImplemented water\u2011jug solver reducing runtime by 20%\u201d) "
+        ]
+      },
+      "risk_factors": [
+        "Limited professional experience may affect employer confidence"
+      ],
+      "potential_red_flags": [
+        "No mention of Machine Learning or cloud technologies",
+        "Potential over\u2011reliance on academic projects only"
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-02-26T07:33:05.096068",
+    "jd_file": "AI Practical File.pdf",
+    "resume_file": "Compiler Design Practical File.pdf",
+    "overall_score": 41,
+    "component_scores": {
+      "base_ai_score": 45,
+      "skills_score": 0,
+      "similarity_score": 11,
+      "experience_score": 100,
+      "keyword_score": 100
+    },
+    "analysis_data": {
+      "overall_match_percentage": "45",
+      "match_category": "Low",
+      "skills_analysis": {
+        "missing_critical_skills": [
+          "Python",
+          "Machine Learning",
+          "SQL",
+          "AWS",
+          "Docker"
+        ],
+        "strong_skills": [
+          "C",
+          "Compiler Design",
+          "Parsing",
+          "C++"
+        ],
+        "skills_match_percentage": "45"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Strong",
+        "relevant_experience_score": "8/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "Python",
+          "Machine Learning",
+          "SQL",
+          "AWS",
+          "Docker"
+        ],
+        "keyword_density_score": "75",
+        "ats_optimization_score": "80"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Solid academic background in compiler design",
+          "Hands\u2011on experience with low\u2011level programming"
+        ],
+        "weaknesses": [
+          "No explicit experience with AI/ML, Python, SQL, AWS, or Docker",
+          "Limited exposure to cloud and container technologies"
+        ],
+        "immediate_improvements": [
+          "Add a technical skills section highlighting Python, ML, SQL, AWS, Docker",
+          "Include any relevant projects or coursework in AI/ML"
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Create a dedicated 'Technical Skills' section",
+          "Add a brief project description linking compiler work to problem\u2011solving abilities",
+          "Quantify achievements (e.g., lines of code, performance improvements)"
+        ],
+        "skill_development": [
+          "Complete online courses or certifications in Python, Machine Learning, SQL, AWS, and Docker",
+          "Build a small ML model or Dockerized application to showcase"
+        ],
+        "presentation_improvements": [
+          "Use consistent bullet formatting",
+          "Add a summary/objective tailored to the AI role",
+          "Ensure proper spacing and punctuation for readability"
+        ]
+      },
+      "risk_factors": [
+        "Limited direct experience with required technologies may affect short\u2011term hiring decision"
+      ],
+      "potential_red_flags": [
+        "Absence of Python, Machine Learning, SQL, AWS, Docker mentions in resume"
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-02-26T07:41:43.988533",
+    "jd_file": "JD.pdf",
+    "resume_file": "Krish Sharma Resume.pdf",
+    "overall_score": 56,
+    "component_scores": {
+      "base_ai_score": 82,
+      "skills_score": 75,
+      "similarity_score": 25,
+      "experience_score": 0,
+      "keyword_score": 75
+    },
+    "analysis_data": {
+      "overall_match_percentage": "82",
+      "match_category": "High",
+      "skills_analysis": {
+        "missing_critical_skills": [
+          "Docker"
+        ],
+        "strong_skills": [
+          "Python",
+          "Machine Learning",
+          "SQL"
+        ],
+        "skills_match_percentage": "85"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Strong",
+        "relevant_experience_score": "8/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "Agile",
+          "Scrum",
+          "distributed computing"
+        ],
+        "keyword_density_score": "78",
+        "ats_optimization_score": "80"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Solid foundation in Python and ML libraries",
+          "Hands\u2011on project experience with deep learning frameworks",
+          "Experience with cloud\u2011related tasks and generative AI"
+        ],
+        "weaknesses": [
+          "Limited explicit mention of Docker and containerization",
+          "Lacks clear demonstration of Agile/Scrum methodology involvement",
+          "SQL experience not quantified or highlighted in projects"
+        ],
+        "immediate_improvements": [
+          "Add Docker usage details to projects",
+          "Highlight Agile/Scrum participation or teamwork",
+          "Quantify SQL usage and results"
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Include specific metrics for each project (e.g., accuracy, performance gains)",
+          "Group projects under relevant categories (ML, NLP, Cloud)",
+          "Add a concise technical summary section"
+        ],
+        "skill_development": [
+          "Gain practical experience with Docker and container orchestration",
+          "Learn basics of Agile/Scrum workflows",
+          "Deep dive into distributed computing (e.g., Spark)"
+        ],
+        "presentation_improvements": [
+          "Use bullet points with action verbs",
+          "Add a professional summary tailored to the role",
+          "Ensure consistent formatting and spacing"
+        ]
+      },
+      "risk_factors": [
+        "No explicit mention of Docker or containerization experience"
+      ],
+      "potential_red_flags": [
+        "Limited exposure to Agile/Scrum processes",
+        "SQL experience not prominently featured"
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-02-26T08:03:28.365628",
+    "jd_file": "JD.pdf",
+    "resume_file": "Krish Sharma Resume.pdf",
+    "overall_score": 63,
+    "component_scores": {
+      "base_ai_score": 85,
+      "skills_score": 100,
+      "similarity_score": 25,
+      "experience_score": 0,
+      "keyword_score": 75
+    },
+    "analysis_data": {
+      "overall_match_percentage": "85",
+      "match_category": "High",
+      "skills_analysis": {
+        "missing_critical_skills": [],
+        "strong_skills": [
+          "Python",
+          "Machine Learning",
+          "SQL"
+        ],
+        "skills_match_percentage": "85"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Strong",
+        "relevant_experience_score": "8/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "Agile/Scrum",
+          "distributed computing"
+        ],
+        "keyword_density_score": "75",
+        "ats_optimization_score": "80"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Solid foundation in Python and ML with multiple projects",
+          "Experience with deep learning frameworks (TensorFlow, PyTorch)",
+          "Relevant internships at IBM and Shell"
+        ],
+        "weaknesses": [
+          "Limited explicit mention of Agile/Scrum methodology",
+          "No clear demonstration of Git version control usage",
+          "Minimal detail on cloud platform tasks"
+        ],
+        "immediate_improvements": [
+          "Add bullet points highlighting Git usage and collaborative workflows",
+          "Quantify cloud-related tasks performed during internships",
+          "Include specific Agile/Scrum experience if any"
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Add a concise professional summary targeting AI Platform role",
+          "Emphasize cloud and version control experience",
+          "Use consistent bullet formatting and quantify achievements"
+        ],
+        "skill_development": [
+          "Gain hands\u2011on experience with AWS or GCP services",
+          "Learn Agile/Scrum practices and apply them in projects",
+          "Practice writing unit tests for ML models"
+        ],
+        "presentation_improvements": [
+          "Structure projects with clear problem\u2011statement, approach, and results",
+          "Include metrics (e.g., accuracy, F1\u2011score) for each project",
+          "Tailor objective to the Associate Machine Learning Engineer position"
+        ]
+      },
+      "risk_factors": [
+        "Internship dates listed in future (July\u2011August 2025) may appear unrealistic"
+      ],
+      "potential_red_flags": [
+        "Overlapping internship periods at IBM and Shell could raise timeline concerns",
+        "Lack of explicit mention of Agile/Scrum or distributed computing experience"
+      ]
+    }
+  }
+]

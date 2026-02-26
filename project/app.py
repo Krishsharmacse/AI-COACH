@@ -10,6 +10,7 @@ from datetime import datetime
 from pathlib import Path
 from contextlib import asynccontextmanager
 import uuid
+import asyncio
 
 # Global variables
 analysis_history = []
@@ -43,7 +44,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    # Using wildcard origins; do not allow credentials to avoid browser CORS errors
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -96,6 +98,20 @@ async def serve_frontend():
         """
         return basic_html
 
+@app.get("/styles.css")
+async def serve_css():
+    css_path = static_dir / "styles.css"
+    if css_path.exists():
+        return FileResponse(css_path)
+    raise HTTPException(status_code=404)
+
+@app.get("/script.js")
+async def serve_js():
+    js_path = static_dir / "script.js"
+    if js_path.exists():
+        return FileResponse(js_path)
+    raise HTTPException(status_code=404)
+
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
@@ -135,15 +151,16 @@ async def analyze_resume(
         if len(resume_content) == 0:
             raise HTTPException(status_code=400, detail="Resume file is empty")
         
-        # Perform analysis
-        print("Starting analysis with ResumeAnalyzer...")
-        result = analyzer.analyze_resume(
+        # Perform analysis (run synchronous, blocking work in a thread)
+        print("Starting analysis with ResumeAnalyzer (offloaded to thread)...")
+        result = await asyncio.to_thread(
+            analyzer.analyze_resume,
             jd_content,
             jd_file.content_type,
             resume_content,
             resume_file.content_type,
             must_have_skills,
-            skill_strictness
+            skill_strictness,
         )
         
         if not result["success"]:
@@ -192,10 +209,14 @@ async def start_interview(
     """Start a new interview session"""
     try:
         session_id = str(uuid.uuid4())
-        
-        # Start interview session
-        session_data = interview_coach.start_interview(
-            job_role, company, experience_level, interview_type
+
+        # Start interview session (offload blocking API call)
+        session_data = await asyncio.to_thread(
+            interview_coach.start_interview,
+            job_role,
+            company,
+            experience_level,
+            interview_type,
         )
         
         active_interviews[session_id] = {
@@ -213,6 +234,11 @@ async def start_interview(
             "message": first_message,
             "timestamp": datetime.now().isoformat()
         })
+        
+        # If voice enabled, speak the first message
+        if voice_enabled:
+            interview_coach.speak_text(first_message)
+
         
         return {
             "success": True,
@@ -242,12 +268,13 @@ async def interview_respond(
             "timestamp": datetime.now().isoformat()
         })
         
-        # Get AI response
-        ai_response = interview_coach.get_response(
+        # Get AI response (offload blocking API call)
+        ai_response = await asyncio.to_thread(
+            interview_coach.get_response,
             session["chat_session"],
             user_response,
             session["job_role"],
-            session["company"]
+            session["company"],
         )
         
         # Add AI message to history
@@ -256,6 +283,11 @@ async def interview_respond(
             "message": ai_response,
             "timestamp": datetime.now().isoformat()
         })
+        
+        # If voice enabled, speak the AI response
+        if session.get("voice_enabled"):
+            interview_coach.speak_text(ai_response)
+
         
         return {
             "success": True,
@@ -283,15 +315,61 @@ async def get_interview_history(session_id: str):
 
 @app.post("/interview/end")
 async def end_interview(session_id: str = Form(...)):
-    """End an interview session"""
+    """End an interview session and get evaluation"""
     try:
-        if session_id in active_interviews:
-            del active_interviews[session_id]
+        if session_id not in active_interviews:
+            raise HTTPException(status_code=404, detail="Interview session not found")
+            
+        session = active_interviews[session_id]
         
-        return {"success": True, "message": "Interview session ended"}
+        evaluation = None
+        if len(session["conversation_history"]) > 1:
+            try:
+                # Offload blocking eval call
+                result_text = await asyncio.to_thread(
+                    interview_coach.evaluate_interview,
+                    session["conversation_history"],
+                    session["job_role"],
+                    session["company"]
+                )
+                
+                # Cleanup JSON formatting if present
+                clean_text = result_text.strip()
+                if clean_text.startswith("```json"): clean_text = clean_text[7:]
+                if clean_text.startswith("```"): clean_text = clean_text[3:]
+                if clean_text.endswith("```"): clean_text = clean_text[:-3]
+                
+                evaluation = json.loads(clean_text.strip())
+            except Exception as e:
+                print(f"Evaluation failed: {e}")
+        
+        del active_interviews[session_id]
+        
+        return {
+            "success": True, 
+            "message": "Interview session ended", 
+            "evaluation": evaluation
+        }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to end interview: {str(e)}")
+
+@app.post("/interview/listen")
+async def interview_listen(session_id: str = Form(...)):
+    """Listen to candidate via server microphone"""
+    try:
+        if session_id not in active_interviews:
+            raise HTTPException(status_code=404, detail="Interview session not found")
+        
+        text = await asyncio.to_thread(interview_coach.listen_candidate)
+        if text:
+            return {"success": True, "text": text}
+        else:
+            return {"success": False, "error": "Could not recognize speech. Please try again or type your response."}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to listen: {str(e)}")
+
 
 # History Endpoints
 @app.get("/history")
@@ -336,4 +414,4 @@ async def clear_history():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

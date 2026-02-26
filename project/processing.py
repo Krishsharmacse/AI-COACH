@@ -101,7 +101,7 @@ class ResumeAnalyzer:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
-        model = "openai/gpt-oss-20b:free"
+        model = "nvidia/nemotron-3-nano-30b-a3b:free"
         jd_trunc = jd_text[:3000] + "..." if len(jd_text) > 3000 else jd_text
         res_trunc = resume_text[:4000] + "..." if len(resume_text) > 4000 else resume_text
 
@@ -148,12 +148,11 @@ class ResumeAnalyzer:
         data = {
             "model": model,
             "messages": [
-                {"role": "system", "content": "You are an ATS analyst."},
+                {"role": "system", "content": "You are an ATS analyst. You must return your response as purely valid JSON, with no markdown formatting or extra text."},
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.3,
             "max_tokens": 4096,
-            "response_format": {"type": "json_object"},
         }
 
         try:
@@ -173,7 +172,22 @@ class ResumeAnalyzer:
     # ---------- SCORING ----------
     def calculate_comprehensive_score(self, ai_analysis, jd_text, resume_text, must_have_skills):
         try:
-            a = json.loads(ai_analysis)
+            # Clean markdown formatting if present
+            clean_ai = ai_analysis.strip()
+            if clean_ai.startswith("```json"):
+                clean_ai = clean_ai[7:]
+            if clean_ai.startswith("```"):
+                clean_ai = clean_ai[3:]
+            if clean_ai.endswith("```"):
+                clean_ai = clean_ai[:-3]
+            clean_ai = clean_ai.strip()
+
+            try:
+                a = json.loads(clean_ai)
+            except Exception as e:
+                print(f"RAW AI RESPONSE:\\n{ai_analysis}")
+                raise e
+
             base = float(a.get("overall_match_percentage", 0))
 
             must = [s.strip().lower() for s in must_have_skills.split(",") if s.strip()]
@@ -220,7 +234,17 @@ class ResumeAnalyzer:
                 raise Exception("Failed to get AI analysis")
 
             scores = self.calculate_comprehensive_score(ai, jd, res, must_have_skills)
-            data = json.loads(ai)
+            
+            clean_ai = ai.strip()
+            if clean_ai.startswith("```json"):
+                clean_ai = clean_ai[7:]
+            if clean_ai.startswith("```"):
+                clean_ai = clean_ai[3:]
+            if clean_ai.endswith("```"):
+                clean_ai = clean_ai[:-3]
+            clean_ai = clean_ai.strip()
+            
+            data = json.loads(clean_ai)
             return {
                 "success": True,
                 "overall_score": scores["final_score"],

@@ -80,3 +80,52 @@ class InterviewCoach:
         thread.daemon = True
         thread.start()
         return thread
+
+    def listen_candidate(self):
+        try:
+            import speech_recognition as sr
+            recognizer = sr.Recognizer()
+            with sr.Microphone() as source:
+                print("\n[Microphone] Adjusting for ambient noise...")
+                recognizer.adjust_for_ambient_noise(source, duration=1)
+                print("[Microphone] Listening for candidate response...")
+                audio = recognizer.listen(source, timeout=10, phrase_time_limit=30)
+            
+            print("[Microphone] Recognizing speech...")
+            text = recognizer.recognize_google(audio)
+            print(f"[Microphone] Candidate said: {text}")
+            return text
+        except ImportError:
+            print("SpeechRecognition library is not installed. Please install it using `pip install SpeechRecognition pyaudio`")
+            return ""
+        except Exception as e:
+            print(f"[Microphone] Speech recognition error: {e}")
+            return ""
+
+    def evaluate_interview(self, conversation_history, job_role, company):
+        try:
+            # Format history for the prompt
+            formatted_history = ""
+            for msg in conversation_history:
+                role = "Interviewer" if msg['role'] == "interviewer" else "Candidate"
+                formatted_history += f"{role}: {msg['message']}\n"
+                
+            prompt = f"""
+            You are an expert HR Interview Evaluator. Review this interview transcript for a {job_role} position at {company}.
+            
+            Interview Transcript:
+            {formatted_history}
+            
+            Please provide a short evaluation in valid JSON format:
+            {{
+                "score": <number between 0 and 100>,
+                "strengths": ["string", "string"],
+                "areas_for_improvement": ["string", "string"],
+                "overall_feedback": "string (2-3 sentences max)"    
+            }}
+            Return purely valid JSON, with no markdown formatting or extra text.
+            """
+            response = self.model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            raise Exception(f"Error evaluating interview: {e}")

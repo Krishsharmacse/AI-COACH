@@ -1,0 +1,170 @@
+[
+  {
+    "timestamp": "2026-01-08T17:11:52.095685",
+    "jd_file": "JD.pdf",
+    "resume_file": "Krish Sharma Software Engineer Resume.pdf",
+    "overall_score": 59,
+    "component_scores": {
+      "base_ai_score": 85,
+      "skills_score": 80,
+      "similarity_score": 26,
+      "experience_score": 0,
+      "keyword_score": 83
+    },
+    "analysis_data": {
+      "overall_match_percentage": "85",
+      "match_category": "High",
+      "skills_analysis": {
+        "missing_critical_skills": [
+          "AWS"
+        ],
+        "strong_skills": [
+          "Python",
+          "Machine Learning",
+          "SQL",
+          "Docker",
+          "TensorFlow",
+          "PyTorch",
+          "Git",
+          "Scikit-learn",
+          "NumPy",
+          "Pandas"
+        ],
+        "skills_match_percentage": "85"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Strong",
+        "relevant_experience_score": "9/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "AWS",
+          "GCP",
+          "Agile/Scrum"
+        ],
+        "keyword_density_score": "75",
+        "ats_optimization_score": "80"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Strong educational background in Computer Science and Engineering",
+          "Extensive hands-on experience with machine learning and deep learning frameworks",
+          "Proven ability to work with Python, SQL, and other relevant tools",
+          "Experience with Git for version control",
+          "Strong project portfolio demonstrating practical application of machine learning concepts"
+        ],
+        "weaknesses": [
+          "Lack of explicit mention of AWS experience in the resume",
+          "No direct mention of Agile/Scrum methodologies"
+        ],
+        "immediate_improvements": [
+          "Explicitly mention any AWS experience, even if it's through coursework or personal projects",
+          "Include any exposure to Agile/Scrum methodologies, even if it's through academic projects"
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Add a dedicated 'Cloud Platforms' section to highlight any experience with AWS, GCP, or Azure",
+          "Include a section on 'Methodologies' to mention any exposure to Agile/Scrum"
+        ],
+        "skill_development": [
+          "Consider obtaining a certification or completing a project that involves AWS to strengthen this skill"
+        ],
+        "presentation_improvements": [
+          "Ensure that the resume is tailored to highlight the most relevant skills and experiences for the job description",
+          "Use bullet points and clear section headers to improve readability"
+        ]
+      },
+      "risk_factors": [
+        "Lack of explicit mention of AWS experience, which is a required qualification"
+      ],
+      "potential_red_flags": [
+        "No direct mention of Agile/Scrum methodologies, which is a preferred qualification"
+      ]
+    }
+  },
+  {
+    "timestamp": "2026-01-08T17:38:07.830219",
+    "jd_file": "JD.pdf",
+    "resume_file": "Krish Sharma Software Engineer Resume.pdf",
+    "overall_score": 64,
+    "component_scores": {
+      "base_ai_score": 85,
+      "skills_score": 100,
+      "similarity_score": 26,
+      "experience_score": 0,
+      "keyword_score": 83
+    },
+    "analysis_data": {
+      "overall_match_percentage": "85",
+      "match_category": "High",
+      "skills_analysis": {
+        "missing_critical_skills": [],
+        "strong_skills": [
+          "Python",
+          "Machine Learning",
+          "TensorFlow",
+          "PyTorch",
+          "Git",
+          "SQL",
+          "NumPy",
+          "Pandas",
+          "Scikit-learn"
+        ],
+        "skills_match_percentage": "90"
+      },
+      "experience_evaluation": {
+        "years_experience_match": "Strong",
+        "relevant_experience_score": "9/10",
+        "career_progression": "Positive"
+      },
+      "keyword_analysis": {
+        "missing_keywords": [
+          "AWS",
+          "GCP",
+          "Agile/Scrum"
+        ],
+        "keyword_density_score": "75",
+        "ats_optimization_score": "80"
+      },
+      "detailed_feedback": {
+        "strengths": [
+          "Strong educational background in Computer Science and Engineering.",
+          "Extensive experience with machine learning libraries and frameworks (Scikit-learn, TensorFlow, PyTorch).",
+          "Proven experience with version control using Git.",
+          "Multiple internships and projects demonstrating practical application of machine learning concepts.",
+          "Strong understanding of both supervised and unsupervised learning algorithms."
+        ],
+        "weaknesses": [
+          "Lacks explicit mention of experience with major cloud platforms (AWS, GCP) in a professional setting.",
+          "No direct mention of Agile/Scrum experience."
+        ],
+        "immediate_improvements": [
+          "Add specific experiences or projects involving AWS or GCP to the resume.",
+          "Include any Agile/Scrum methodologies used in past projects or internships."
+        ]
+      },
+      "recommendations": {
+        "resume_optimization": [
+          "Incorporate keywords related to cloud platforms (AWS, GCP) and Agile/Scrum methodologies.",
+          "Highlight any experience with distributed computing concepts like Apache Spark."
+        ],
+        "skill_development": [
+          "Gain hands-on experience with cloud platforms (AWS, GCP) through additional projects or certifications.",
+          "Familiarize yourself with Agile/Scrum methodologies through online courses or workshops."
+        ],
+        "presentation_improvements": [
+          "Ensure the resume is well-structured and easy to read, with clear section headers and bullet points.",
+          "Quantify achievements where possible, such as the accuracy of models built in projects."
+        ]
+      },
+      "risk_factors": [
+        "Lack of explicit cloud platform experience might be a concern for some employers."
+      ],
+      "potential_red_flags": [
+        "No red flags identified."
+      ]
+    }
+  }
+]

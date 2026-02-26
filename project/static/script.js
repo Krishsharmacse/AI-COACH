@@ -1,12 +1,12 @@
-// API Configuration
-const API_BASE_URL = 'http://localhost:8000';
+// API Configuration — use the page origin when served from the backend to avoid CORS
+const API_BASE_URL = (window && window.location && window.location.protocol !== 'file:' && window.location.origin && window.location.origin !== 'null') ? window.location.origin : 'http://localhost:8000';
 
 // DOM Elements
 const elements = {
     // Navigation
     navBtns: document.querySelectorAll('.nav-btn'),
     tabContents: document.querySelectorAll('.tab-content'),
-    
+
     // Resume Analyzer
     jdUploadArea: document.getElementById('jdUploadArea'),
     resumeUploadArea: document.getElementById('resumeUploadArea'),
@@ -55,7 +55,17 @@ const elements = {
     conversationMessages: document.getElementById('conversationMessages'),
     userResponse: document.getElementById('userResponse'),
     sendResponseBtn: document.getElementById('sendResponseBtn'),
+    listenBtn: document.getElementById('listenBtn'),
+    voiceEnabled: document.getElementById('voiceEnabled'),
     interviewProgress: document.getElementById('interviewProgress'),
+
+    // Interview Evaluation
+    interviewEvaluationSection: document.getElementById('interviewEvaluationSection'),
+    interviewScore: document.getElementById('interviewScore'),
+    interviewFeedback: document.getElementById('interviewFeedback'),
+    interviewStrengths: document.getElementById('interviewStrengths'),
+    interviewImprovements: document.getElementById('interviewImprovements'),
+    newInterviewBtn: document.getElementById('newInterviewBtn'),
 
     // History
     historyTable: document.getElementById('historyTable'),
@@ -82,31 +92,79 @@ function initializeEventListeners() {
     // Resume Analyzer - File Upload
     elements.jdUploadArea.addEventListener('click', () => elements.jdFile.click());
     elements.resumeUploadArea.addEventListener('click', () => elements.resumeFile.click());
-    
+
     elements.jdFile.addEventListener('change', (e) => handleFileSelect(e, 'jd'));
     elements.resumeFile.addEventListener('change', (e) => handleFileSelect(e, 'resume'));
-    
+
     // Resume Analyzer - Configuration
     elements.skillStrictness.addEventListener('input', (e) => {
         elements.strictnessValue.textContent = e.target.value;
     });
-    
+
     // Resume Analyzer - Analysis
     elements.analyzeBtn.addEventListener('click', analyzeResume);
     elements.resumeBackBtn.addEventListener('click', showResumeInputSection);
-    
+
     // Analysis Tabs
     if (elements.analysisTabHeaders) {
         elements.analysisTabHeaders.forEach(header => {
             header.addEventListener('click', () => switchAnalysisTab(header.dataset.tab));
         });
     }
-    
+
     // Interview Coach
     elements.startInterviewBtn.addEventListener('click', startInterview);
     elements.endInterviewBtn.addEventListener('click', endInterview);
     elements.sendResponseBtn.addEventListener('click', sendInterviewResponse);
-    
+
+    if (elements.listenBtn) {
+        elements.listenBtn.addEventListener('click', async () => {
+            if (!currentInterviewSession) {
+                showToast('No active interview session', 'error');
+                return;
+            }
+
+            const originalText = elements.listenBtn.innerHTML;
+            elements.listenBtn.innerHTML = '<i class="fas fa-microphone"></i> Listening...';
+            elements.listenBtn.disabled = true;
+            elements.listenBtn.style.opacity = '0.7';
+
+            try {
+                const formData = new FormData();
+                formData.append('session_id', currentInterviewSession);
+
+                const response = await fetch(`${API_BASE_URL}/interview/listen`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Listening failed');
+
+                const result = await response.json();
+                if (result.success && result.text) {
+                    elements.userResponse.value = result.text;
+                    showToast('Voice captured successfully', 'success');
+                } else {
+                    showToast(result.error || 'Could not recognize speech, please try again or type', 'warning');
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Mic error: ' + e.message, 'error');
+            } finally {
+                elements.listenBtn.innerHTML = originalText;
+                elements.listenBtn.disabled = false;
+                elements.listenBtn.style.opacity = '1';
+            }
+        });
+    }
+
+    if (elements.newInterviewBtn) {
+        elements.newInterviewBtn.addEventListener('click', () => {
+            elements.interviewEvaluationSection.classList.add('hidden');
+            elements.startInterviewBtn.classList.remove('hidden');
+        });
+    }
+
     // History
     elements.refreshHistory.addEventListener('click', loadHistory);
     elements.clearHistory.addEventListener('click', clearHistory);
@@ -154,13 +212,13 @@ function handleFileSelect(event, type) {
 function updateFileInfo(file, type) {
     const fileInfoElement = type === 'jd' ? elements.jdFileInfo : elements.resumeFileInfo;
     const uploadArea = type === 'jd' ? elements.jdUploadArea : elements.resumeUploadArea;
-    
+
     fileInfoElement.innerHTML = `
         <strong>${file.name}</strong>
         <br>Size: ${(file.size / 1024 / 1024).toFixed(2)} MB
         <br>Type: ${file.type}
     `;
-    
+
     uploadArea.style.borderColor = 'var(--success)';
     uploadArea.style.background = '#f0fff4';
 }
@@ -259,7 +317,7 @@ async function analyzeResume() {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             currentAnalysisData = result;
             displayAnalysisResults(result);
@@ -276,7 +334,7 @@ async function analyzeResume() {
 
 function displayAnalysisResults(result) {
     console.log('📊 Analysis result:', result);
-    
+
     // Hide loading and show results
     elements.resumeLoadingState.classList.add('hidden');
     elements.resumeResultsContent.classList.remove('hidden');
@@ -287,7 +345,7 @@ function displayAnalysisResults(result) {
     // Display overall score
     const score = result.overall_score;
     let gradient, status, icon;
-    
+
     if (score >= 70) {
         gradient = 'linear-gradient(135deg, #00b09b, #96c93d)';
         status = 'Strong Match';
@@ -365,9 +423,9 @@ function populateAnalysisData(analysisData) {
                 <div class="missing-keywords">
                     <h4>Missing Keywords:</h4>
                     <div class="keyword-list">
-                        ${keywordAnalysis.missing_keywords.map(keyword => 
-                            `<span class="keyword-tag missing">${keyword}</span>`
-                        ).join('')}
+                        ${keywordAnalysis.missing_keywords.map(keyword =>
+            `<span class="keyword-tag missing">${keyword}</span>`
+        ).join('')}
                     </div>
                 </div>
             ` : ''}
@@ -410,7 +468,7 @@ function populateList(container, items, type = '', icon = '•') {
     }
 
     console.log(`📝 Populating ${container.id} with ${items.length} items`);
-    
+
     container.innerHTML = items.map(item => {
         const displayText = typeof item === 'string' ? item : JSON.stringify(item);
         return `
@@ -425,7 +483,7 @@ function populateList(container, items, type = '', icon = '•') {
 // Analysis Tab Management
 function switchAnalysisTab(tabName) {
     console.log('🔖 Switching to analysis tab:', tabName);
-    
+
     // Update tab headers
     if (elements.analysisTabHeaders) {
         elements.analysisTabHeaders.forEach(header => {
@@ -466,7 +524,7 @@ async function startInterview() {
         formData.append('company', elements.company.value);
         formData.append('experience_level', elements.experienceLevel.value);
         formData.append('interview_type', elements.interviewType.value);
-        formData.append('voice_enabled', false);
+        formData.append('voice_enabled', elements.voiceEnabled ? elements.voiceEnabled.checked : false);
 
         const response = await fetch(`${API_BASE_URL}/interview/start`, {
             method: 'POST',
@@ -478,23 +536,24 @@ async function startInterview() {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             currentInterviewSession = result.session_id;
-            
+
             // Update UI
+            elements.interviewEvaluationSection.classList.add('hidden');
             elements.startInterviewBtn.classList.add('hidden');
             elements.endInterviewBtn.classList.remove('hidden');
             elements.interviewConversation.classList.remove('hidden');
-            
+
             // Display first message
             displayInterviewMessage('interviewer', result.first_message);
-            
+
             showToast('Interview started! The HR interviewer will begin the conversation.', 'success');
         } else {
             throw new Error('Failed to start interview session');
         }
-        
+
     } catch (error) {
         console.error('❌ Error starting interview:', error);
         showToast('Failed to start interview: ' + error.message, 'error');
@@ -517,7 +576,7 @@ async function sendInterviewResponse() {
         // Display user message
         displayInterviewMessage('candidate', userResponse);
         elements.userResponse.value = '';
-        
+
         const formData = new FormData();
         formData.append('session_id', currentInterviewSession);
         formData.append('user_response', userResponse);
@@ -532,17 +591,17 @@ async function sendInterviewResponse() {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             // Display AI response
             displayInterviewMessage('interviewer', result.ai_response);
-            
+
             // Update progress
             updateInterviewProgress(result.conversation_history);
         } else {
             throw new Error('Failed to get AI response');
         }
-        
+
     } catch (error) {
         console.error('❌ Error sending response:', error);
         showToast('Failed to send response: ' + error.message, 'error');
@@ -556,7 +615,7 @@ function displayInterviewMessage(role, message) {
         <strong>${role === 'interviewer' ? '🤵 HR Interviewer' : '👤 You'}:</strong>
         <div style="margin-top: 0.5rem;">${message}</div>
     `;
-    
+
     elements.conversationMessages.appendChild(messageElement);
     elements.conversationMessages.scrollTop = elements.conversationMessages.scrollHeight;
 }
@@ -564,7 +623,7 @@ function displayInterviewMessage(role, message) {
 function updateInterviewProgress(conversationHistory) {
     const interviewerMessages = conversationHistory.filter(msg => msg.role === 'interviewer').length;
     const progress = Math.min((interviewerMessages / 8) * 100, 100);
-    
+
     elements.interviewProgress.textContent = `Progress: ${Math.round(progress)}%`;
 }
 
@@ -572,27 +631,47 @@ async function endInterview() {
     if (!currentInterviewSession) return;
 
     try {
+        elements.endInterviewBtn.disabled = true;
+        elements.endInterviewBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Evaluating...';
+
         const formData = new FormData();
         formData.append('session_id', currentInterviewSession);
 
-        await fetch(`${API_BASE_URL}/interview/end`, {
+        const response = await fetch(`${API_BASE_URL}/interview/end`, {
             method: 'POST',
             body: formData
         });
 
+        const result = await response.json();
+
         // Reset UI
         elements.startInterviewBtn.classList.remove('hidden');
         elements.endInterviewBtn.classList.add('hidden');
+        elements.endInterviewBtn.disabled = false;
+        elements.endInterviewBtn.innerHTML = '<i class="fas fa-stop"></i> End Interview';
         elements.interviewConversation.classList.add('hidden');
         elements.conversationMessages.innerHTML = '';
         elements.userResponse.value = '';
-        
+
         currentInterviewSession = null;
-        
+
+        if (result.success && result.evaluation) {
+            // Show evaluation section
+            elements.interviewEvaluationSection.classList.remove('hidden');
+            elements.interviewScore.textContent = `${result.evaluation.score}/100`;
+
+            elements.interviewFeedback.textContent = result.evaluation.overall_feedback || 'No feedback provided.';
+
+            populateList(elements.interviewStrengths, result.evaluation.strengths || [], 'success', '✅');
+            populateList(elements.interviewImprovements, result.evaluation.areas_for_improvement || [], 'warning', '⚡');
+        }
+
         showToast('Interview ended successfully', 'success');
-        
+
     } catch (error) {
         console.error('❌ Error ending interview:', error);
+        elements.endInterviewBtn.disabled = false;
+        elements.endInterviewBtn.innerHTML = '<i class="fas fa-stop"></i> End Interview';
         showToast('Failed to end interview: ' + error.message, 'error');
     }
 }
@@ -601,11 +680,11 @@ async function endInterview() {
 async function loadHistory() {
     try {
         const response = await fetch(`${API_BASE_URL}/history`);
-        
+
         if (!response.ok) {
             throw new Error(`History endpoint returned ${response.status}`);
         }
-        
+
         const result = await response.json();
 
         if (result.success) {
@@ -644,10 +723,9 @@ function displayHistory(history) {
                             <td style="padding: 1rem;">${item.date}</td>
                             <td style="padding: 1rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.jd_file}">${item.jd_file}</td>
                             <td style="padding: 1rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.resume_file}">${item.resume_file}</td>
-                            <td style="padding: 1rem; font-weight: bold; color: ${
-                                item.score >= 70 ? '#28a745' : 
-                                item.score >= 50 ? '#ffc107' : '#dc3545'
-                            };">${item.score}%</td>
+                            <td style="padding: 1rem; font-weight: bold; color: ${item.score >= 70 ? '#28a745' :
+            item.score >= 50 ? '#ffc107' : '#dc3545'
+        };">${item.score}%</td>
                             <td style="padding: 1rem;">${item.status}</td>
                         </tr>
                     `).join('')}
@@ -672,7 +750,7 @@ async function clearHistory() {
         }
 
         const result = await response.json();
-        
+
         if (result.success) {
             showToast('History cleared successfully!', 'success');
             loadHistory();
@@ -702,15 +780,15 @@ function showToast(message, type = 'info') {
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         animation: slideIn 0.3s ease;
     `;
-    
+
     // Set background color based on type
     if (type === 'success') toast.style.background = '#28a745';
     else if (type === 'error') toast.style.background = '#dc3545';
     else if (type === 'warning') toast.style.background = '#ffc107';
     else toast.style.background = '#007bff';
-    
+
     elements.toastContainer.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideOut 0.3s ease';
         setTimeout(() => toast.remove(), 300);
@@ -895,10 +973,10 @@ document.head.appendChild(style);
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Initializing CareerPrep Pro...');
-    
+
     initializeEventListeners();
     loadHistory();
-    
+
     // Test initial connection
     testBackendConnection().then(result => {
         if (result.success) {

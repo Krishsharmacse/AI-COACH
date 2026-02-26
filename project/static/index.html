@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareerPrep Pro - ATS Analyzer & AI Interview Coach</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="./styles.css">
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -83,7 +83,7 @@
                         <i class="fas fa-rocket"></i> Run Comprehensive Analysis
                     </button>
                 </div>
-                
+
                 <div class="results-section hidden" id="resumeResultsSection">
                     <div class="score-display" id="scoreDisplay"></div>
 
@@ -95,12 +95,13 @@
                     <div class="results-content hidden" id="resumeResultsContent">
                         <div class="card" style="margin-top: 2rem;">
                             <h3>Analysis Complete!</h3>
-                            <p>Your resume analysis has been completed. Check the different tabs for detailed insights.</p>
+                            <p>Your resume analysis has been completed. Check the different tabs for detailed insights.
+                            </p>
                             <button class="back-btn" id="resumeBackBtn" style="margin-top: 1rem;">
                                 <i class="fas fa-arrow-left"></i> Go Back to Input
                             </button>
                         </div>
-                        
+
                         <div class="analysis-tabs">
                             <div class="analysis-tab-headers">
                                 <button class="analysis-tab-header active" data-tab="skills">
@@ -227,6 +228,13 @@
                                         <option value="Comprehensive">Comprehensive</option>
                                     </select>
                                 </div>
+                                <div class="config-group"
+                                    style="display: flex; align-items: flex-end; padding-bottom: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                        <input type="checkbox" id="voiceEnabled" style="width: 20px; height: 20px;">
+                                        <strong>Enable AI Voice (Speak out loud)</strong>
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -249,14 +257,55 @@
                         </div>
 
                         <div class="conversation-messages" id="conversationMessages">
-                            </div>
+                        </div>
 
                         <div class="response-input">
                             <textarea id="userResponse" placeholder="Type your answer here..." rows="4"></textarea>
-                            <button id="sendResponseBtn">
-                                <i class="fas fa-paper-plane"></i> Send Response
-                            </button>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <button id="listenBtn"
+                                    style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); flex: 1;">
+                                    <i class="fas fa-microphone"></i> Voice Input
+                                </button>
+                                <button id="sendResponseBtn" style="flex: 2;">
+                                    <i class="fas fa-paper-plane"></i> Send Response
+                                </button>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="interview-evaluation hidden" id="interviewEvaluationSection"
+                        style="margin-top: 2rem; background: white; padding: 2rem; border-radius: 15px; box-shadow: var(--shadow);">
+                        <h3
+                            style="border-bottom: 2px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                            <i class="fas fa-chart-line"></i> Interview Evaluation
+                        </h3>
+
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <div style="font-size: 3rem; font-weight: bold; color: var(--primary);" id="interviewScore">
+                                --/100</div>
+                            <div style="color: #666; font-size: 1.1rem;">Overall Performance Score</div>
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4><i class="fas fa-comment-dots"></i> Overall Feedback</h4>
+                            <p id="interviewFeedback"
+                                style="background: #f8f9fa; padding: 1rem; border-radius: 8px; line-height: 1.6;"></p>
+                        </div>
+
+                        <div class="analysis-grid" style="margin-top: 2rem;">
+                            <div class="analysis-column">
+                                <h4><i class="fas fa-star" style="color: #f1c40f;"></i> Strengths</h4>
+                                <div id="interviewStrengths"></div>
+                            </div>
+                            <div class="analysis-column">
+                                <h4><i class="fas fa-arrow-up" style="color: #e74c3c;"></i> Areas for Improvement</h4>
+                                <div id="interviewImprovements"></div>
+                            </div>
+                        </div>
+
+                        <button id="newInterviewBtn" style="margin-top: 2rem; width: 100%;">
+                            <i class="fas fa-redo"></i> Start New Interview
+                        </button>
                     </div>
                 </div>
             </section>
@@ -286,7 +335,7 @@
 
     <div id="toastContainer"></div>
 
-    <script src="/static/script.js"></script>
+    <script src="./script.js"></script>
 </body>
 
-</html> 
+</html>
