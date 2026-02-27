@@ -414,4 +414,8 @@ async def clear_history():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    # Get host and port from environment variables for deployment flexibility
+    host = os.getenv("HOST", "0.0.0.0")  # Default to 0.0.0.0 for deployment
+    port = int(os.getenv("PORT", 8000))  # Default to 8000
+    print(f"Starting server on {host}:{port}")
+    uvicorn.run(app, host=host, port=port)

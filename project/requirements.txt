@@ -11,9 +11,4 @@ plotly==5.17.0
 numpy==1.24.3
 python-dotenv==1.0.0
 google-generativeai==0.3.0
-gtts==2.3.2
-pygame==2.5.0
 python-socketio==5.10.0
-SpeechRecognition
-pyaudio # Required dependency for microphone access
-# pydub is also commonly needed for audio file manipulation but we'll try to work with in-memory bytes

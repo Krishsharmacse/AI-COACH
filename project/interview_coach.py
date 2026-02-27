@@ -6,6 +6,7 @@ from gtts import gTTS
 import pygame
 import time
 import threading
+import speech_recognition as sr
 
 load_dotenv()
 
@@ -14,6 +15,7 @@ class InterviewCoach:
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         self.model = genai.GenerativeModel("gemini-2.5-flash-lite")
         pygame.mixer.init()
+        self.listening = False
     
     def get_system_prompt(self, job_role, company, experience_level, interview_type):
         return f"""
@@ -61,50 +63,93 @@ class InterviewCoach:
             return response.text
         except Exception as e:
             raise Exception(f"Error getting AI response: {e}")
-    
+
     def speak_text(self, text):
         def speak_thread(text):
             try:
                 clean_text = text.replace('*', '').replace('`', '').replace('#', '').strip()
                 tts = gTTS(text=clean_text, lang='en', slow=False)
-                filename = os.path.join(tempfile.gettempdir(), f"hr_voice_{int(time.time())}.mp3")
+                filename = os.path.join(tempfile.gettempdir(), f"hr_voice_{int(time.time() * 1000)}.mp3")
                 tts.save(filename)
+                
                 pygame.mixer.music.load(filename)
                 pygame.mixer.music.play()
                 while pygame.mixer.music.get_busy():
                     time.sleep(0.1)
+                    
+                if os.path.exists(filename):
+                    try:
+                        os.remove(filename)
+                    except:
+                        pass
             except Exception as e:
-                print(f"Speech error: {e}")
+                print(f"[Speech error]: {e}")
         
         thread = threading.Thread(target=speak_thread, args=(text,))
         thread.daemon = True
         thread.start()
         return thread
 
-    def listen_candidate(self):
+    def stop_listening(self):
+        """Toggle off the microphone gracefully."""
+        print("[Microphone] Stopping...")
+        self.listening = False
+
+    def listen_candidate(self, timeout=10, phrase_time_limit=30):
+        """
+        Listens to candidate until they toggle off the microphone manually.
+        """
         try:
-            import speech_recognition as sr
             recognizer = sr.Recognizer()
-            with sr.Microphone() as source:
-                print("\n[Microphone] Adjusting for ambient noise...")
-                recognizer.adjust_for_ambient_noise(source, duration=1)
-                print("[Microphone] Listening for candidate response...")
-                audio = recognizer.listen(source, timeout=10, phrase_time_limit=30)
+            self.listening = True
             
-            print("[Microphone] Recognizing speech...")
-            text = recognizer.recognize_google(audio)
+            with sr.Microphone() as source:
+                print("\n[Microphone] Adjusting for ambient noise (0.5 sec)...")
+                recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                print("[Microphone] Listening for candidate response (Click Stop to finish)...")
+                
+                # We read manually from pyaudio to allow immediate break when user stops
+                audio_frames = []
+                # Check buffer up to 45 seconds total if user never clicks Stop
+                max_iterations = int((45.0 * source.SAMPLE_RATE) / source.CHUNK)
+                
+                for _ in range(max_iterations):
+                    if not self.listening:
+                        break
+                    try:
+                        buffer = source.stream.read(source.CHUNK)
+                        audio_frames.append(buffer)
+                    except IOError as e:
+                        # Depending on platform, sometimes reads can overflow or underflow
+                        pass
+            
+            self.listening = False
+            
+            if not audio_frames:
+                return ""
+            
+            print("[Microphone] Recognizing speech via Google...")
+            # Convert to AudioData which recognizer requires
+            audio_data = sr.AudioData(b"".join(audio_frames), source.SAMPLE_RATE, source.SAMPLE_WIDTH)
+            text = recognizer.recognize_google(audio_data)
             print(f"[Microphone] Candidate said: {text}")
             return text
+            
+        except sr.UnknownValueError:
+            print("[Microphone] Could not understand audio.")
+            return ""
+        except sr.RequestError as e:
+            print(f"[Microphone] API request failed: {e}")
+            return ""
         except ImportError:
-            print("SpeechRecognition library is not installed. Please install it using `pip install SpeechRecognition pyaudio`")
+            print("SpeechRecognition not fully installed")
             return ""
         except Exception as e:
-            print(f"[Microphone] Speech recognition error: {e}")
+            print(f"[Microphone] Unexpected error: {e}")
             return ""
 
     def evaluate_interview(self, conversation_history, job_role, company):
         try:
-            # Format history for the prompt
             formatted_history = ""
             for msg in conversation_history:
                 role = "Interviewer" if msg['role'] == "interviewer" else "Candidate"
